@@ -11,14 +11,21 @@ module regfile(
 );
     reg [7:0] regs [3:0]; //4 registers, each 8 bits wide
 
-    always @(posedge clk) begin
-        if (we)
-            // YOUR CODE HERE — write wdata to regs[waddr]
-            ;
+    // Power-on init so unwritten registers read as 0x00
+    // (matches the testbench check that register D == 0 before any write)
+    integer i;
+    initial begin
+        for (i = 0; i < 4; i = i + 1)
+            regs[i] = 8'h00;
     end
 
-    // YOUR CODE HERE — assign rdata0 and rdata1 from regs\
-    // assign rdata0 = ...
-    // assign rdata1 = ...
+    always @(posedge clk) begin
+        if (we)
+            regs[waddr] <= wdata;
+    end
+
+    // Asynchronous reads — combinational
+    assign rdata0 = regs[raddr0];
+    assign rdata1 = regs[raddr1];
 
 endmodule
